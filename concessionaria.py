@@ -12,7 +12,7 @@ def selettoreMarche():
 
 # Massa
 def visualizzaVeicolo(veicolo):
-
+    pass
 tk = Tk()
 tk.title("Gestione Concessionaria")
 logo = PhotoImage(file="logo.png")
