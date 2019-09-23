@@ -5,13 +5,14 @@ CREATE TABLE IF NOT EXISTS "marche" (
 );
 
 CREATE TABLE IF NOT EXISTS "veicoli" (
-	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"marca"	INTEGER,
-	"serie"	TEXT,
-	"modello"	TEXT,
-	"cavalli"	TEXT,
-	"anno_costruzione"	TEXT,
-	"categoria"	TEXT,
-	"prezzo"	REAL,
-	"qta"	INTEGER
+                                         "id"               INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                                         "marca"            INTEGER,
+                                         "serie"            TEXT,
+                                         "modello"          TEXT,
+                                         "cavalli"          TEXT,
+                                         "anno_costruzione" TEXT,
+                                         "categoria"        TEXT,
+                                         "prezzo"           REAL,
+                                         "qta"              INTEGER,
+                                         "foto"             TEXT
 )
