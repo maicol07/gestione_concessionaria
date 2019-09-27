@@ -67,25 +67,6 @@ def selettoreMarche():
     w.mainloop()
 
 
-# Massa
-def visualizzaVeicolo(veicolo):
-    """
-    Visualizza nel dettaglio il veicolo. È possibile anche aumentare e diminuire le quantità disponibili.
-
-    :param veicolo:
-    :return:
-    """
-    pass
-    f = Toplevel()
-    f.title("Info Veicolo")
-    f.iconbitmap("img/icon.ico")
-    fr = Frame(f)
-    fr.pack()
-    veicoli = db.select("veicoli", where={"id": veicolo})
-
-    f.mainloop()
-
-
 # ========== MAIN ========== #
 tk = Tk()
 tk.title("Gestione Concessionaria")  # Impostazione titolo
