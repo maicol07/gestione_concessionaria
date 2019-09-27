@@ -15,7 +15,7 @@ from tkinter import *
 from tkinter.ttk import *
 
 # ========== LIBRERIE ESTERNE ========== #
-from lib.medoo import Medoo
+from lib.medoo import Medoo  #per non scrivere i comandi SQL
 
 # ========== MODULI DEL PROGETTO ========== #
 from modules.settings import Impostazioni
@@ -50,21 +50,7 @@ def listaVeicoli(marca):
     btn_filter.grid(row=0, column=1)
 
 
-# Ale
-def selettoreMarche():
-    """
-    Permette all'utente di selezionare una marca
-    """
-    w = Toplevel()
-    w.title("Seleziona marca")
-    w.iconbitmap("img/icon.ico")
-    f = Frame(w)
-    f.pack()
-    marche = db.select("marche")
-    for marca in marche:
-        var = PhotoImage(file=marca.logo)
-        btn = Button(f, text=marca.name, image=var, compound=TOP)
-    w.mainloop()
+
 
 
 # Massa
