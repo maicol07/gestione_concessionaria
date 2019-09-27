@@ -5,6 +5,7 @@ Copyright (c) 2017-2018 RedFantom
 """
 # Standard library
 import os
+import tkinter as tk
 from shutil import copytree, rmtree
 
 # Packages
@@ -13,7 +14,6 @@ from PIL import Image, ImageEnhance
 from . import _imgops as imgops
 # Project Modules
 from . import _utils as utils
-from ._tkinter import tk
 from ._utils import get_file_directory
 
 
