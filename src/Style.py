@@ -1,4 +1,4 @@
-from lib.ttkthemes import ThemedStyle
+from lib.ttkthemes.themed_style import ThemedStyle
 
 
 class Style:
