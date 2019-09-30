@@ -29,7 +29,7 @@ class SelettoreMarche:
         vari= PhotoImage(file="img/add.png")
         f1 = Frame(w)
         f1.pack()
-        btn= Button(f1, text="Aggiungi", image=vari, compound=LEFT)
+        btn= Button(f1, text="Aggiungi", image=vari, compound=LEFT, command=lambda:self.aggiungi())
         btn.grid(row=0, column=0)
         vari1= PhotoImage(file="img/delete.png")
         btn2= Button(f1, text="Elimina", image=vari1, compound=LEFT)
@@ -54,7 +54,7 @@ class SelettoreMarche:
         immagine=PhotoImage(file="img/pick_file.png")
         btn=Button(f2,text="Seleziona immagine", image=immagine ,compound=LEFT)
         immagine2=PhotoImage(file="img/save.png")
-        btns=Button(w, text="Salva", image=immagine2, compound=LEFT)
+        btns=Button(w, text="Salva", image=immagine2, compound=LEFT, command=lambda: ) #NON DIMENTICARE DI FINIRE LAMBDA
         btn.grid(row=0, column=1)
         btns.pack()
         simm.grid(row=0, column=0)
@@ -62,6 +62,8 @@ class SelettoreMarche:
 
 
 
+    def selezionaimmagine(self):
+        immagine= askopenfilename()
 
 
 
