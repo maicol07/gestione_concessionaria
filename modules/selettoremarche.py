@@ -133,6 +133,7 @@ class SelettoreMarche:
         photo = PIL.ImageTk.PhotoImage(img)
         bi["image"] = photo
         bi.image = photo
+        window.focus()
 
     def Salva(self, nome, immagine):
         self.__db.insert("marche", "nome, logo",(nome, immagine))
