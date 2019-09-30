@@ -16,4 +16,4 @@ class Veicolo:
         self.__id = id
 
     def save(self):
-        self.__db.update(self.__table, vars(self), {"id": self.__id})
+        self.__db.update(self.__table, vars(self), where={"id": self.__id})

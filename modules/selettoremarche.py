@@ -2,6 +2,8 @@
 from tkinter import *
 from tkinter.ttk import *
 
+import src.Style
+
 
 class SelettoreMarche:
     def __init__(self, db):
@@ -11,6 +13,7 @@ class SelettoreMarche:
         w = Toplevel()
         w.title("Seleziona marca")
         w.iconbitmap("img/icon.ico")
+        src.Style.s.change_window_bg(w)
         f = Frame(w)
         f.pack()
         marche = db.select("marche")  # seleziona tutto dalla tabella marche, ritorna un oggetto
@@ -37,6 +40,7 @@ class SelettoreMarche:
         w = Toplevel()
         w.title("Aggiungi marca")
         w.iconbitmap("img/icon.ico")
+
         f= Frame(w)
         f.pack()
         e=Label(f, text="Marca")

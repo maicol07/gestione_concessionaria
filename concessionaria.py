@@ -49,14 +49,19 @@ from lib.medoo import Medoo  #per non scrivere i comandi SQL
 
 # ========== MODULI DEL PROGETTO ========== #
 from modules.settings import Impostazioni
+from modules.selettoremarche import SelettoreMarche
 
 # ========== CLASSI ========== #
 from src.Style import Style
 
-# Apertura database (viene creato se non esiste il file) e creazione tabelle se non esistono già
-db = Medoo('sqlite', '~/Documents/Gestione Concessionaria/db.db')
+# Apertura database (viene creato se non esiste già il file) e creazione tabelle se non esistono già
+# if not(os.path.exists(os.path.expanduser('~/Documents/Gestione Concessionaria'))):
+#    os.makedirs(os.path.expanduser('~/Documents/Gestione Concessionaria'))
+# open(os.path.expanduser('~/Documents/Gestione Concessionaria/db.db'), "w").close()  # Creazione file database
+db = Medoo('sqlite', database=os.path.expanduser('~/Documents/Gestione Concessionaria/db.db'))
 query = open("tables.sql")
-db.cursor.executescript(query.read())
+db.connection.executescript(query.read())
+query.close()
 
 
 def listaVeicoli(marca):
@@ -95,7 +100,7 @@ l.pack()  # Impacchettamento etichetta (alla finestra)
 # ===== FRAME PULSANTI ===== #
 bf = Frame(tk)
 bf.pack(pady=20)
-btn = Button(bf, text="Selettore marche".upper(), command=selettoreMarche)  # Creazione pulsante
+btn = Button(bf, text="Selettore marche".upper(), command=lambda: SelettoreMarche(db))  # Creazione pulsante
 btn.grid(row=0, column=0, padx=10)  # Impacchettamento pulsante (alla finestra)
 
 settings_image = PhotoImage(file="img/settings.png")
@@ -104,8 +109,7 @@ btn_settings = Button(bf, text="Impostazioni".upper(), compound=LEFT, image=sett
 btn_settings.grid(row=0, column=1, padx=10)
 
 # ===== IMPOSTAZIONE STILE ===== #
-s = Style(db)
-tk.configure(background=s.color)
+s = Style(db, tk)
 
 tk.mainloop()  # Inizio ciclo eventi
 db.close()  # Chiusura database

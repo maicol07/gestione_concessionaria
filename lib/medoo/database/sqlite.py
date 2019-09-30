@@ -32,8 +32,12 @@ class Sqlite(Base):
         self.dialect(DialectSqlite)
 
     def _connect(self, *args, **kwargs):
+        if kwargs['database']:
+            database = kwargs['database']
+        else:
+            database = ':memory:'
         arguments = {
-            'database': ':memory:',
+            'database': database,
             'timeout': 5.0,
             'detect_types': 0,
             'isolation_level': None,

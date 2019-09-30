@@ -47,7 +47,7 @@ class Medoo(object):
             if not dbtype.lower() in val:
                 continue
 
-            mod = importlib.import_module('database.{}'.format(key.lower()), package='medoo')
+            mod = importlib.import_module('lib.medoo.database.{}'.format(key.lower()), package='medoo')
             klass = getattr(mod, key)
             return klass(*args, **kwargs)
 
