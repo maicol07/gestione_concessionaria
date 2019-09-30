@@ -1,7 +1,6 @@
 # ========== LIBRERIE INTERNE ========== #
 import os
 import platform
-import sys
 import tkinter.messagebox as tkmb
 from tkinter import *
 from tkinter.filedialog import askopenfilename
@@ -132,3 +131,4 @@ class SelettoreMarche:
         photo = PIL.ImageTk.PhotoImage(img)
         bi["image"] = photo
         bi.image = photo
+        window.focus()
