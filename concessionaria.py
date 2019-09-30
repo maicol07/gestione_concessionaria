@@ -55,9 +55,9 @@ from modules.selettoremarche import SelettoreMarche
 from src.Style import Style
 
 # Apertura database (viene creato se non esiste già il file) e creazione tabelle se non esistono già
-# if not(os.path.exists(os.path.expanduser('~/Documents/Gestione Concessionaria'))):
-#    os.makedirs(os.path.expanduser('~/Documents/Gestione Concessionaria'))
-# open(os.path.expanduser('~/Documents/Gestione Concessionaria/db.db'), "w").close()  # Creazione file database
+if not (os.path.exists(os.path.expanduser('~/Documents/Gestione Concessionaria'))):
+    os.makedirs(os.path.expanduser('~/Documents/Gestione Concessionaria'))
+open(os.path.expanduser('~/Documents/Gestione Concessionaria/db.db'), "w").close()  # Creazione file database
 db = Medoo('sqlite', database=os.path.expanduser('~/Documents/Gestione Concessionaria/db.db'))
 query = open("tables.sql")
 db.connection.executescript(query.read())
