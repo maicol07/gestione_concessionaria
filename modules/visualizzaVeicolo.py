@@ -18,7 +18,7 @@ class visualizzaVeicolo:
         fr = Frame(f)
         fr.pack()
         imm = veicolo.foto
-        etc1 = Label(f, image=imm).grid(row=1, column=1)
+        etc1 = Label(f, image=imm)
         etc2 = Label(f, text="Questo veicolo, della marca {}, possiede {} cavalli. Il nome del modello è {} ed è stata "
                              "costruita nel {}. La categoria a cui questo veicolo appartiene è {}. Il prezzo della vettura"
                              " è {} mentre in concessionaria sono disponibili {} esemplare/i ".format(veicolo.marca,
@@ -27,11 +27,14 @@ class visualizzaVeicolo:
                                                                                                       veicolo.anno_costruzione,
                                                                                                       veicolo.categoria,
                                                                                                       veicolo.prezzo,
-                                                                                                      veicolo.qta))
+                                                                                                      veicolo.qta)
+        etc1.grid(row=1, column=1)
+        etc2.grid(row=1, column=3)
 
-        puls = Button(f, text="Modifica veicolo", command=self.modificaVeicolo)
-        piu = Button(f, text="+", command=self.aumenta).pack()
-        meno= Button(f, text="-", command=self.diminuisci).pack()
+        puls = Button(f, text="Modifica veicolo", command=self.modificaVeicolo)).grid(row=6, column=8)
+        piu = Button(f, text="+", command=self.aumenta).grid(row=4,column=1)
+        meno= Button(f, text="-", command=self.diminuisci).grid(row=4,column=3)
+        quant=Label(f,text="{}".format(self.veicolo.qta)).grid(row=4, column=2)
         f.mainloop()
 
     def aumenta(self):
@@ -56,7 +59,7 @@ class visualizzaVeicolo:
             ent = Entry(g, textvariable=self.i)
 
         foto=PhotoImage(file="img/save.png")
-        sal= Button(g, text="Salva", image=foto, compound=LEFT, command=self.salva)
+        sal= Button(g, text="Salva", image=foto, compound=LEFT, command=self.salva).pack()
 
     def salva (self):
         for i in vars(self.veicolo).keys():
