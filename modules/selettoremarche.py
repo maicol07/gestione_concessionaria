@@ -46,11 +46,21 @@ class SelettoreMarche:
         e=Label(f, text="Marca")
         e.grid(row=0, column=0)
         s = StringVar()
-        ctext= Entry(w, textvariable=s)
-        ctext.grid()
+        ctext= Entry(f, textvariable=s)
+        ctext.grid(row=0, column=1 )
         f2=Frame(w)
         f2.pack()
-        e1=Label()
+        simm=Label(f2,text="Immagine")
+        immagine=PhotoImage(file="img/pick_file.png")
+        btn=Button(f2,text="Seleziona immagine", image=immagine ,compound=LEFT)
+        immagine2=PhotoImage(file="img/save.png")
+        btns=Button(w, text="Salva", image=immagine2, compound=LEFT)
+        btn.grid(row=0, column=1)
+        btns.pack()
+        simm.grid(row=0, column=0)
+        w.mainloop()
+
+
 
 
 

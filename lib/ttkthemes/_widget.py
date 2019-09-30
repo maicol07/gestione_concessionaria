@@ -8,7 +8,9 @@ import os
 import tkinter as tk
 from shutil import copytree, rmtree
 
-'''py_version = sys.version_info
+import sys
+import platform
+py_version = sys.version_info
 if py_version <= (3, 5):  # Verifico che la versione di Python installata sia superiore o uguale a 3.5 per il corretto
     # funzionamento del programma. In caso negativo, lancio un messaggio di errore ed esco
     tk.messagebox.showerror(title="Versione di Python non supportata",
@@ -35,9 +37,9 @@ if system != "linux":  # escludo linux in quanto ha già Pillow installato
                                                                                                py_version.micro))
             exit()
         os_info = "macosx-10.14-x86_64"
-    sys.path.insert(0, os.path.abspath("../PIL/Pillow-6.1.0-py{}.{}-{}.egg".format(py_version.major, py_version.minor,
+    sys.path.insert(0, os.path.abspath("../lib/PIL/Pillow-6.1.0-py{}.{}-{}.egg".format(py_version.major, py_version.minor,
                                                                                     os_info)))
-'''
+
 # Packages
 from PIL import Image, ImageEnhance
 

@@ -93,6 +93,7 @@ tk = Tk()
 tk.title("Gestione Concessionaria")  # Impostazione titolo
 tk.iconphoto(True, PhotoImage(file="img/icon.png"))  # Impostazione icona
 
+
 logo = PhotoImage(file="img/logo.png")  # Creazione variabile immagine
 l = Label(tk, image=logo)  # Creazione etichetta immagine
 l.pack()  # Impacchettamento etichetta (alla finestra)
