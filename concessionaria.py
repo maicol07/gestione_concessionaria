@@ -91,7 +91,7 @@ def listaVeicoli(marca):
 # ========== MAIN ========== #
 tk = Tk()
 tk.title("Gestione Concessionaria")  # Impostazione titolo
-tk.iconbitmap("img/icon.ico")  # Impostazione icona
+tk.iconphoto(True, PhotoImage(file="img/icon.png"))  # Impostazione icona
 
 logo = PhotoImage(file="img/logo.png")  # Creazione variabile immagine
 l = Label(tk, image=logo)  # Creazione etichetta immagine

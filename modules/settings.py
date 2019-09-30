@@ -18,7 +18,7 @@ class Impostazioni:
         self.__style = style
         w = Toplevel()
         w.title("Impostazioni")
-        w.iconbitmap("img/icon.ico")
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
         src.Style.s.change_window_bg(w)
         ft = Labelframe(w, text="Cambia tema")
         ft.pack(pady=10)

@@ -12,7 +12,7 @@ class SelettoreMarche:
             """
         w = Toplevel()
         w.title("Seleziona marca")
-        w.iconbitmap("img/icon.ico")
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
         src.Style.s.change_window_bg(w)
         f = Frame(w)
         f.pack()
@@ -39,7 +39,7 @@ class SelettoreMarche:
     def aggiungi(self):
         w = Toplevel()
         w.title("Aggiungi marca")
-        w.iconbitmap("img/icon.ico")
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
 
         f= Frame(w)
         f.pack()
