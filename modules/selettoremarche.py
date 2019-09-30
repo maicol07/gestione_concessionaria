@@ -47,7 +47,8 @@ class SelettoreMarche:
     def __init__(self, db):
         """
             Permette all'utente di selezionare una marca
-            """
+           """
+        self.__db=db
         w = Toplevel()
         w.title("Seleziona marca")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
@@ -132,3 +133,6 @@ class SelettoreMarche:
         photo = PIL.ImageTk.PhotoImage(img)
         bi["image"] = photo
         bi.image = photo
+
+    def Salva(self, nome, immagine):
+        self.__db.insert("marche", "nome, logo",(nome, immagine))
