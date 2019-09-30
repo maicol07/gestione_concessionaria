@@ -1,5 +1,6 @@
 # ========== LIBRERIE INTERNE ========== #
 from tkinter import *
+from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
 
 import src.Style
@@ -63,9 +64,5 @@ class SelettoreMarche:
 
 
     def selezionaimmagine(self):
-        immagine= askopenfilename()
-
-
-
-
-
+        immagine = askopenfilename(
+            filetypes=[("File Immagini", "*.jpg *.jpeg *.png *.bmp *.gif *.psd *.tif *.tiff *.xbm *.xpm *.pgm *.ppm")])
