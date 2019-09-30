@@ -1,4 +1,4 @@
-import six
+from lib import six
 
 from .exception import WhereParseError, AnyAllSomeParseError
 
