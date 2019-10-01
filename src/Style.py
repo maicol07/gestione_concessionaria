@@ -26,7 +26,8 @@ class Style:
         try:
             font = self.__db.get("impostazioni", "value", where={"setting": 'font'})
             if font:
-                self.style.configure('.', font=font)
+                self.current_font = font
+                self.style.configure('.', font=self.current_font)
         except TypeError:
             pass
         try:
@@ -59,20 +60,6 @@ class Style:
         for i in self.__windows:
             self.change_window_bg(i)
 
-    def save_theme(self, theme):
-        """
-        Salva il tema nel database e lo cambia utilizzando il metodo update_style
-
-        :param theme:
-        :return:
-        """
-        if hasattr(self, "current_theme"):
-            self.__db.update("impostazioni", {"value": theme}, where={"setting": "theme"})
-        else:
-            self.__db.insert("impostazioni", "setting, value", ("theme", theme))
-        self.update_style(theme)
-        self.current_theme = theme
-
     def change_window_bg(self, w):
         """
         Modifica lo sfondo della finestra passata come parametro e la aggiunge alla lista di quelle già aperte, se non
@@ -94,6 +81,28 @@ class Style:
         """
         self.__windows.remove(w)
 
+    def set_theme(self, theme):
+        """
+        Salva il tema nel database e lo cambia utilizzando il metodo update_style
+
+        :param theme:
+        :return:
+        """
+        if hasattr(self, "current_theme"):
+            self.__db.update("impostazioni", {"value": theme}, where={"setting": "theme"})
+        else:
+            self.__db.insert("impostazioni", "setting, value", ("theme", theme))
+        self.update_style(theme)
+        self.current_theme = theme
+
+    def set_font(self, font):
+        if hasattr(self, "current_font"):
+            self.__db.update("impostazioni", {"value": font}, where={"setting": "font"})
+        else:
+            self.__db.insert("impostazioni", "setting, value", ("font", font))
+        self.current_font = font
+        self.style.configure('.', font=self.current_font)
+
     def get_themes_list(self):
         """
         Ritorna la lista dei temi disponibili
@@ -107,3 +116,15 @@ class Style:
         :return:
         """
         return self.style.theme_use()
+
+    def get_current_font(self):
+        """
+        Ritorna il nome del carattere attualmente impostato. Se si sta usando quello predefinito verrà restituito
+        "default"
+
+        :return:
+        """
+        if hasattr(self, "current_font"):
+            return self.current_font
+        else:
+            return 'default'

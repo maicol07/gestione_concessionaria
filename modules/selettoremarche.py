@@ -1,7 +1,6 @@
 # ========== LIBRERIE INTERNE ========== #
 import os
 import platform
-import sys
 import tkinter.messagebox as tkmb
 from tkinter import *
 from tkinter.filedialog import askopenfilename
@@ -43,6 +42,7 @@ if system != "linux":  # escludo linux in quanto ha già Pillow installato
 import PIL.Image
 import PIL.ImageTk
 
+
 class SelettoreMarche:
     def __init__(self, db):
         """
@@ -50,28 +50,29 @@ class SelettoreMarche:
            """
         self.__db=db
         w = Toplevel()
+        self.__root = w
         w.title("Seleziona marca")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
         src.Style.s.change_window_bg(w)
         f = Frame(w)
         f.pack()
         marche = db.select("marche")  # seleziona tutto dalla tabella marche, ritorna un oggetto
-        contr=0  # contatore righe
-        contc=0  # contatore colonne
+        contr = 0  # contatore righe
+        contc = 0  # contatore colonne
         for marca in marche:
             var = PhotoImage(file=marca.logo)  # ottengo l'oggetto " logo" (il percorso del logo)
-            btn = Button(f, text=marca.name, image=var, compound=TOP)
+            btn = Button(f, text=marca.nome, image=var, compound=TOP)
             btn.grid(row=contr, column=contc)
-            contc+=1
-            if contc==2:
-                contr+=1
-        vari= PhotoImage(file="img/add.png")
+            contc += 1
+            if contc == 2:
+                contr += 1
+        vari = PhotoImage(file="img/add.png")
         f1 = Frame(w)
         f1.pack()
-        btn= Button(f1, text="Aggiungi", image=vari, compound=LEFT, command=lambda:self.aggiungi())
+        btn = Button(f1, text="Aggiungi", image=vari, compound=LEFT, command=lambda: self.aggiungi())
         btn.grid(row=0, column=0)
-        vari1= PhotoImage(file="img/delete.png")
-        btn2= Button(f1, text="Elimina", image=vari1, compound=LEFT)
+        vari1 = PhotoImage(file="img/delete.png")
+        btn2 = Button(f1, text="Elimina", image=vari1, compound=LEFT)
         btn2.grid(row=0, column=1)
         w.mainloop()
 
@@ -80,21 +81,22 @@ class SelettoreMarche:
         w.title("Aggiungi marca")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
 
-        f= Frame(w)
+        f = Frame(w)
         f.pack()
-        e=Label(f, text="Marca")
+        e = Label(f, text="Marca")
         e.grid(row=0, column=0)
         s = StringVar()
-        ctext= Entry(f, textvariable=s)
-        ctext.grid(row=0, column=1 )
-        f2=Frame(w)
+        ctext = Entry(f, textvariable=s)
+        ctext.grid(row=0, column=1)
+        f2 = Frame(w)
         f2.pack()
-        simm=Label(f2,text="Immagine")
-        immagine=PhotoImage(file="img/pick_file.png")
+        simm = Label(f2, text="Immagine")
+        immagine = PhotoImage(file="img/pick_file.png")
         btn = Button(f2, text="Seleziona immagine", image=immagine, compound=LEFT,
                      command=lambda: self.selImmagine(btn, w))
-        immagine2=PhotoImage(file="img/save.png")
-        btns = Button(w, text="Salva", image=immagine2, compound=LEFT)  # NON DIMENTICARE DI FINIRE LAMBDA
+        immagine2 = PhotoImage(file="img/save.png")
+        btns = Button(w, text="Salva", image=immagine2, compound=LEFT,
+                      command=lambda: self.Salva(ctext.get(), self.__image, w))  # NON DIMENTICARE DI FINIRE LAMBDA
         btn.grid(row=0, column=1)
         btns.pack()
         simm.grid(row=0, column=0)
@@ -106,7 +108,7 @@ class SelettoreMarche:
 
             Parametri
             ----------
-            :param bi : (Tkinter Button)
+            :param Button bi : (Tkinter Button)
                 Pulsante Immagine Tkinter
             :param window : (string)
                 Stringa che riporta il nome della finestra.
@@ -119,6 +121,7 @@ class SelettoreMarche:
             filetypes=[
                 ("File Immagini", "*.jpg *.jpeg *.png *.bmp *.gif *.psd *.tif *.tiff *.xbm *.xpm *.pgm *.ppm")])
         if not (fImage == ""):
+            self.__image = fImage
             bi["text"] = ""
         else:
             bi["text"] = "Seleziona immagine"
@@ -135,5 +138,10 @@ class SelettoreMarche:
         bi.image = photo
         window.focus()
 
-    def Salva(self, nome, immagine):
+    def Salva(self, nome, immagine, wadd):
         self.__db.insert("marche", "nome, logo",(nome, immagine))
+        tkmb.showinfo(title="Marca aggiunta con successo!",
+                      message="La marca è stata aggiunta con successo!")
+        wadd.destroy()
+        self.__root.destroy()
+        SelettoreMarche(self.__db)
