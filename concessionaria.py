@@ -64,30 +64,6 @@ db.connection.executescript(query.read())
 query.close()
 
 
-def listaVeicoli(marca):
-    """
-    Mostra all'utente una lista di veicoli di una determinata marca tra cui scegliere
-
-    :param marca:
-    :return:
-    """
-    w = Toplevel()
-    w.title("Lista veicoli")
-    w.iconbitmap("img/logo.ico")
-
-    f = Labelframe(w, text="Filtra")
-    f.pack()
-    search = StringVar()
-    e = Entry(f, textvariable=search)
-    e.grid(row=0, column=0, padx=10)
-    filter_icon = PhotoImage(file="img/search.png")
-    btn_filter = Button(f, text="Filtra", compound=LEFT, image=filter_icon)
-    btn_filter.grid(row=0, column=1)
-
-
-
-
-
 # ========== MAIN ========== #
 tk = Tk()
 tk.title("Gestione Concessionaria")  # Impostazione titolo

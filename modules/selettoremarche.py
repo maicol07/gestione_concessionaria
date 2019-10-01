@@ -41,7 +41,7 @@ if system != "linux":  # escludo linux in quanto ha già Pillow installato
 
 import PIL.Image
 import PIL.ImageTk
-
+from modules.listaveicoli import ListaVeicoli
 
 class SelettoreMarche:
     def __init__(self, db):
@@ -61,7 +61,7 @@ class SelettoreMarche:
         contc = 0  # contatore colonne
         for marca in marche:
             var = PhotoImage(file=marca.logo)  # ottengo l'oggetto " logo" (il percorso del logo)
-            btn = Button(f, text=marca.nome, image=var, compound=TOP)
+            btn = Button(f, text=marca.nome, image=var, compound=TOP, command=lambda: ListaVeicoli(marca.id, self.__db))
             btn.grid(row=contr, column=contc)
             contc += 1
             if contc == 2:
