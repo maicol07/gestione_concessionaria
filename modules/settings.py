@@ -1,5 +1,4 @@
 # ========== LIBRERIE INTERNE ========== #
-import sys
 import tkinter.messagebox as tkmb
 from tkinter import *
 from tkinter.ttk import *
@@ -89,7 +88,7 @@ class Impostazioni:
 
     def import_dati_esempio(self):
         if self.__db.select("marche"):
-            result = tkmb.askyesno(master=self.__root, title="Dati già presenti!",
+            result = tkmb.askyesno(parent=self.__root, title="Dati già presenti!",
                                    message="Attenzione! Sono già presenti dei dati inseriti. Si vuole veramente "
                                            "sostituirli con i dati di esempio? TUTTI I DATI GIÀ PRESENTI VERRANNO "
                                            "ELIMINATI!")
@@ -98,6 +97,6 @@ class Impostazioni:
         data = open("../exampledata.sql")
         self.__db.cursor.executescript(data.read())
         data.close()
-        tkmb.showinfo(master=self.__root, title="Dati importati correttamente",
+        tkmb.showinfo(parent=self.__root, title="Dati importati correttamente",
                       message="I dati sono stati importati con successo! Chiudi eventuali finestre aperte relative"
                               "alle marche e ai veicoli.")

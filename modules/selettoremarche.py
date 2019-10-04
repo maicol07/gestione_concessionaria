@@ -1,54 +1,25 @@
 # ========== LIBRERIE INTERNE ========== #
-import os
-import platform
 import tkinter.messagebox as tkmb
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
 
 import src.Style
+from src.common import import_pil
 
 # ===== IMPORT PIL ===== #
-py_version = sys.version_info
-if py_version <= (3, 5):  # Verifico che la versione di Python installata sia superiore o uguale a 3.5 per il corretto
-    # funzionamento del programma. In caso negativo, lancio un messaggio di errore ed esco
-    tkmb.showerror(title="Versione di Python non supportata",
-                   message="La versione di Python attualmente installata ({}.{}.{}) non è supportata. Aggiornare alla "
-                           "versione 3.5 o successive".format(py_version.major, py_version.minor, py_version.micro))
-    exit()
-
-system = platform.system().lower()
-if system != "linux":  # escludo linux in quanto ha già Pillow installato
-    if system == "windows":
-        if platform.architecture()[0] == "32bit":
-            os_info = "win32"
-        else:
-            os_info = "win-amd64"
-    else:
-        if py_version <= (3, 7):  # Se la versione di Python installata è minore della 3.7 su MAC il programma non
-            # funzionerà correttamente. Lancio un messaggio di errore ed esco.
-            tkmb.showerror(title="Versione di Python non supportata",
-                           message="È stato rilevato che il sistema in uso è MAC OS X. La versione di Python "
-                                   "attualmente installata ({}.{}.{}) non è supportata su questo tipo di sistema. "
-                                   "Aggiornare alla versione 3.7 o successive".format(py_version.major,
-                                                                                      py_version.minor,
-                                                                                      py_version.micro))
-            exit()
-        os_info = "macosx-10.14-x86_64"
-    sys.path.insert(0,
-                    os.path.abspath("../lib/PIL/Pillow-6.1.0-py{}.{}-{}.egg".format(py_version.major, py_version.minor,
-                                                                                    os_info)))
-
+import_pil('../')
 import PIL.Image
 import PIL.ImageTk
 from modules.listaveicoli import ListaVeicoli
+
 
 class SelettoreMarche:
     def __init__(self, db):
         """
             Permette all'utente di selezionare una marca
            """
-        self.__db=db
+        self.__db = db
         w = Toplevel()
         self.__root = w
         w.title("Seleziona marca")
@@ -60,7 +31,7 @@ class SelettoreMarche:
         contr = 0  # contatore righe
         contc = 0  # contatore colonne
         for marca in marche:
-            var = PhotoImage(file=marca.logo)  # ottengo l'oggetto " logo" (il percorso del logo)
+            var = self.scale_image(marca.logo, 50)  # ottengo l'oggetto " logo" (il percorso del logo)
             btn = Button(f, text=marca.nome, image=var, compound=TOP, command=lambda: ListaVeicoli(marca.id, self.__db))
             btn.grid(row=contr, column=contc)
             contc += 1
@@ -126,22 +97,31 @@ class SelettoreMarche:
         else:
             bi["text"] = "Seleziona immagine"
             return
-        img = PIL.Image.open(fImage)
-        # Ridimensionamento immagine a 100 px per larghezza, altezza variabile e scalata in base a quella vecchia e alla
-        # larghezza di 100 px
-        basewidth = 100
-        wpercent = (basewidth / float(img.size[0]))
-        hsize = int((float(img.size[1]) * float(wpercent)))
-        img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
-        photo = PIL.ImageTk.PhotoImage(img)
-        bi["image"] = photo
-        bi.image = photo
+        img = self.scale_image(fImage, 100)
+        bi["image"] = img
+        bi.image = img
         window.focus()
 
     def Salva(self, nome, immagine, wadd):
-        self.__db.insert("marche", "nome, logo",(nome, immagine))
+        self.__db.insert("marche", "nome, logo", (nome, immagine))
         tkmb.showinfo(title="Marca aggiunta con successo!",
                       message="La marca è stata aggiunta con successo!")
         wadd.destroy()
         self.__root.destroy()
         SelettoreMarche(self.__db)
+
+    def scale_image(self, path, basewidth):
+        """
+        Ridimensiona l'immagine passata come parametro ad una larghezza definita (secondo parametro) ed altezza
+        variabile, scalata in base a quella vecchia e alla larghezza desiderata
+
+        :param path str
+        :param basewidth int
+        :return:
+        """
+        img = PIL.Image.open(path)
+        wpercent = (basewidth / float(img.size[0]))
+        hsize = int((float(img.size[1]) * float(wpercent)))
+        img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+        photo = PIL.ImageTk.PhotoImage(img)
+        return photo
