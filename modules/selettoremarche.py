@@ -3,7 +3,7 @@ import tkinter.messagebox as tkmb
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
-
+from io import BytesIO
 import src.Style
 from src.common import import_pil
 
@@ -27,6 +27,7 @@ class SelettoreMarche:
         src.Style.s.change_window_bg(w)
         f = Frame(w)
         f.pack()
+        self.__image=""
         marche = db.select("marche")  # seleziona tutto dalla tabella marche, ritorna un oggetto
         contr = 0  # contatore righe
         contc = 0  # contatore colonne
@@ -67,7 +68,7 @@ class SelettoreMarche:
                      command=lambda: self.selImmagine(btn, w))
         immagine2 = PhotoImage(file="img/save.png")
         btns = Button(w, text="Salva", image=immagine2, compound=LEFT,
-                      command=lambda: self.Salva(ctext.get(), self.__image, w))  # NON DIMENTICARE DI FINIRE LAMBDA
+                      command=lambda: self.Salva(ctext.get(), self.__image, w))
         btn.grid(row=0, column=1)
         btns.pack()
         simm.grid(row=0, column=0)
@@ -103,12 +104,15 @@ class SelettoreMarche:
         window.focus()
 
     def Salva(self, nome, immagine, wadd):
+        if nome=="":
+            tkmb.showerror(parent=wadd, title="Errore",
+            message="Non è stato  inserito il nome della marca!")
         self.__db.insert("marche", "nome, logo", (nome, immagine))
         tkmb.showinfo(title="Marca aggiunta con successo!",
                       message="La marca è stata aggiunta con successo!")
-        wadd.destroy()
-        self.__root.destroy()
-        SelettoreMarche(self.__db)
+        wadd.destroy() #elimina la scermata "Aggiungi"
+        self.__root.destroy() #elimina la finestra iniziale
+        SelettoreMarche(self.__db) #ricrea la finestra iniziale con gli elementi aggiunti
 
     def scale_image(self, path, basewidth):
         """
@@ -119,9 +123,26 @@ class SelettoreMarche:
         :param basewidth int
         :return:
         """
-        img = PIL.Image.open(path)
+        try:
+            data=path.decode
+            img=PIL.Image.open(BytesIO(path))
+        except:
+            img = PIL.Image.open(path)
         wpercent = (basewidth / float(img.size[0]))
         hsize = int((float(img.size[1]) * float(wpercent)))
         img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
         photo = PIL.ImageTk.PhotoImage(img)
         return photo
+
+    def elimina(self):
+        w = Toplevel()
+        w.title("Elimina marca")
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
+
+        f = Frame(w)
+        f.pack()
+        s = StringVar()
+        ctext = Combobox(f, textvariable=s, values=self.__db.select("marche")) #crea il menù a tendina
+        ctext.grid(row=0, column=1)
+        f2 = Frame(w)
+        f2.pack()
