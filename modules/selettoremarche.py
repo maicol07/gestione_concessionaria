@@ -44,7 +44,7 @@ class SelettoreMarche:
         btn = Button(f1, text="Aggiungi", image=vari, compound=LEFT, command=lambda: self.aggiungi())
         btn.grid(row=0, column=0)
         vari1 = PhotoImage(file="img/delete.png")
-        btn2 = Button(f1, text="Elimina", image=vari1, compound=LEFT)
+        btn2 = Button(f1, text="Elimina", image=vari1, compound=LEFT,command= lambda :self.schermataElimina())
         btn2.grid(row=0, column=1)
         w.mainloop()
 
@@ -134,15 +134,30 @@ class SelettoreMarche:
         photo = PIL.ImageTk.PhotoImage(img)
         return photo
 
-    def elimina(self):
+    def schermataElimina(self):
         w = Toplevel()
         w.title("Elimina marca")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
-
         f = Frame(w)
         f.pack()
         s = StringVar()
-        ctext = Combobox(f, textvariable=s, values=self.__db.select("marche")) #crea il menù a tendina
+        nmarche=self.__db.select("marche")
+        diz={}
+        for i in nmarche:
+            diz[i.id]=i.nome
+        ctext = Combobox(f, textvariable=s, values=list(diz.values())) #crea il menù a tendina
         ctext.grid(row=0, column=1)
-        f2 = Frame(w)
-        f2.pack()
+        vari1 = PhotoImage(file="img/delete.png")
+        btn = Button(f, text="Elimina", image=vari1, compound=LEFT, command=lambda: self.elimina(ctext.get(),diz,w))
+        btn.grid(row=0, column=2)
+        w.mainloop()
+
+    def elimina(self, nome, marche, w):
+        values=list(marche.values())
+        n=values.index(nome)
+        keys=list(marche.keys())
+        self.__db.delete("marche", where={"id":keys[n]})
+        tkmb.showinfo(parent=w, title="Info", message="La marca è stata elliminata con successo")
+        w.destroy()
+        self.__root.destroy()
+        SelettoreMarche(self.__db)
