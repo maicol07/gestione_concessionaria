@@ -1,59 +1,127 @@
 # ========== LIBRERIE INTERNE ========== #
+import tkinter.messagebox as tkmb
 from tkinter import *
+from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
 
 import src.Style
+from src.common import import_pil
+
+# ===== IMPORT PIL ===== #
+import_pil('../')
+import PIL.Image
+import PIL.ImageTk
+from modules.listaveicoli import ListaVeicoli
 
 
 class SelettoreMarche:
     def __init__(self, db):
         """
             Permette all'utente di selezionare una marca
-            """
+           """
+        self.__db = db
         w = Toplevel()
+        self.__root = w
         w.title("Seleziona marca")
-        w.iconbitmap("img/icon.ico")
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
         src.Style.s.change_window_bg(w)
         f = Frame(w)
         f.pack()
         marche = db.select("marche")  # seleziona tutto dalla tabella marche, ritorna un oggetto
-        contr=0  # contatore righe
-        contc=0  # contatore colonne
+        contr = 0  # contatore righe
+        contc = 0  # contatore colonne
         for marca in marche:
-            var = PhotoImage(file=marca.logo)  # ottengo l'oggetto " logo" (il percorso del logo)
-            btn = Button(f, text=marca.name, image=var, compound=TOP)
+            var = self.scale_image(marca.logo, 50)  # ottengo l'oggetto " logo" (il percorso del logo)
+            btn = Button(f, text=marca.nome, image=var, compound=TOP, command=lambda: ListaVeicoli(marca.id, self.__db))
             btn.grid(row=contr, column=contc)
-            contc+=1
-            if contc==2:
-                contr+=1
-        vari= PhotoImage(file="img/add.png")
+            contc += 1
+            if contc == 2:
+                contr += 1
+        vari = PhotoImage(file="img/add.png")
         f1 = Frame(w)
         f1.pack()
-        btn= Button(f1, text="Aggiungi", image=vari, compound=LEFT)
+        btn = Button(f1, text="Aggiungi", image=vari, compound=LEFT, command=lambda: self.aggiungi())
         btn.grid(row=0, column=0)
-        vari1= PhotoImage(file="img/delete.png")
-        btn2= Button(f1, text="Elimina", image=vari1, compound=LEFT)
+        vari1 = PhotoImage(file="img/delete.png")
+        btn2 = Button(f1, text="Elimina", image=vari1, compound=LEFT)
         btn2.grid(row=0, column=1)
         w.mainloop()
 
     def aggiungi(self):
         w = Toplevel()
         w.title("Aggiungi marca")
-        w.iconbitmap("img/icon.ico")
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
 
-        f= Frame(w)
+        f = Frame(w)
         f.pack()
-        e=Label(f, text="Marca")
+        e = Label(f, text="Marca")
         e.grid(row=0, column=0)
         s = StringVar()
-        ctext= Entry(w, textvariable=s)
-        ctext.grid()
-        f2=Frame(w)
+        ctext = Entry(f, textvariable=s)
+        ctext.grid(row=0, column=1)
+        f2 = Frame(w)
         f2.pack()
-        e1=Label()
+        simm = Label(f2, text="Immagine")
+        immagine = PhotoImage(file="img/pick_file.png")
+        btn = Button(f2, text="Seleziona immagine", image=immagine, compound=LEFT,
+                     command=lambda: self.selImmagine(btn, w))
+        immagine2 = PhotoImage(file="img/save.png")
+        btns = Button(w, text="Salva", image=immagine2, compound=LEFT,
+                      command=lambda: self.Salva(ctext.get(), self.__image, w))  # NON DIMENTICARE DI FINIRE LAMBDA
+        btn.grid(row=0, column=1)
+        btns.pack()
+        simm.grid(row=0, column=0)
+        w.mainloop()
 
+    def selImmagine(self, bi, window):
+        """
+            Apre il file picker per selezionare una immagine
 
+            Parametri
+            ----------
+            :param Button bi : (Tkinter Button)
+                Pulsante Immagine Tkinter
+            :param window : (string)
+                Stringa che riporta il nome della finestra.
 
+            Ritorna
+            -------
+            Niente
+            """
+        fImage = askopenfilename(
+            filetypes=[
+                ("File Immagini", "*.jpg *.jpeg *.png *.bmp *.gif *.psd *.tif *.tiff *.xbm *.xpm *.pgm *.ppm")])
+        if not (fImage == ""):
+            self.__image = fImage
+            bi["text"] = ""
+        else:
+            bi["text"] = "Seleziona immagine"
+            return
+        img = self.scale_image(fImage, 100)
+        bi["image"] = img
+        bi.image = img
+        window.focus()
 
+    def Salva(self, nome, immagine, wadd):
+        self.__db.insert("marche", "nome, logo", (nome, immagine))
+        tkmb.showinfo(title="Marca aggiunta con successo!",
+                      message="La marca è stata aggiunta con successo!")
+        wadd.destroy()
+        self.__root.destroy()
+        SelettoreMarche(self.__db)
 
+    def scale_image(self, path, basewidth):
+        """
+        Ridimensiona l'immagine passata come parametro ad una larghezza definita (secondo parametro) ed altezza
+        variabile, scalata in base a quella vecchia e alla larghezza desiderata
 
+        :param path str
+        :param basewidth int
+        :return:
+        """
+        img = PIL.Image.open(path)
+        wpercent = (basewidth / float(img.size[0]))
+        hsize = int((float(img.size[1]) * float(wpercent)))
+        img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+        photo = PIL.ImageTk.PhotoImage(img)
+        return photo

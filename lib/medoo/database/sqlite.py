@@ -1,7 +1,6 @@
 import sqlite3
 
-import six
-
+from lib import six
 from ..base import Base
 from ..dialect import Dialect
 

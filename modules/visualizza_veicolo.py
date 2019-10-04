@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+
 from src import Veicolo
 
 
@@ -14,7 +15,7 @@ class visualizzaVeicolo:
         self.veicolo=veicolo
         f = Toplevel()
         f.title("Info Veicolo")
-        f.iconbitmap("img/icon.ico")
+        f.iconphoto(True, PhotoImage(file="img/icon.png"))
         fr = Frame(f)
         fr.pack()
         imm = veicolo.foto
@@ -49,7 +50,7 @@ class visualizzaVeicolo:
     def modificaVeicolo(self):
         g = Toplevel()
         g.title("Modifica veicolo")
-        g.iconbitmap("img/icon.ico")
+        g.iconphoto(True, PhotoImage(file="img/icon.png"))
         fr = Frame(g)
         fr.pack()
 
