@@ -52,7 +52,7 @@ class Impostazioni:
         fde = Labelframe(w, text="Importa dati di esempio")
         fde.grid(row=1, column=1, padx=10, pady=10)
         idown = PhotoImage(file="img/download.png")
-        bti = Button(fde, text="Importa", image=idown, compound=LEFT)
+        bti = Button(fde, text="Importa", image=idown, compound=LEFT, command=self.import_dati_esempio)
         bti.pack(padx=5, pady=5)
         w.mainloop()
 
@@ -87,14 +87,16 @@ class Impostazioni:
             btn.configure(command=lambda: self.__style.set_font(font_str))
 
     def import_dati_esempio(self):
-        if self.__db.select("marche"):
+        if list(self.__db.select("marche")):
             result = tkmb.askyesno(parent=self.__root, title="Dati già presenti!",
                                    message="Attenzione! Sono già presenti dei dati inseriti. Si vuole veramente "
                                            "sostituirli con i dati di esempio? TUTTI I DATI GIÀ PRESENTI VERRANNO "
                                            "ELIMINATI!")
+            self.__db.delete("marche", where=None)
+            self.__db.delete("veicoli", where=None)
             if not result:
                 return
-        data = open("../exampledata.sql")
+        data = open("exampledata.sql")
         self.__db.cursor.executescript(data.read())
         data.close()
         tkmb.showinfo(parent=self.__root, title="Dati importati correttamente",

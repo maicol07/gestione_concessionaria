@@ -5,6 +5,7 @@ from tkinter.ttk import *
 import lib.wckToolTips
 import src.Style
 from lib.medoo.database.sqlite import Sqlite
+from modules.visualizza_veicolo import VisualizzaVeicolo
 from src.Veicolo import Veicolo
 
 
@@ -74,9 +75,10 @@ class ListaVeicoli:
         self.__tree.pack()
         self.__tree.bind("<Button-3>", self.actions)
         res = self.__db.select("veicoli", "id", where={"marca": self.__marca})
+        self.__tree.bind("<Double-Button-1>", lambda e: self.visualizza_veicolo())
         for veicolo in res:
             v = Veicolo(self.__db, veicolo.id)
-            self.__tree.insert('', 'end', text=v.id, values=vars(v).values())
+            self.__tree.insert('', 'end', text=v.id, values=list(v.get_attributes().values()))
         li = Label(w, text="Per aggiungere un veicolo, usa il tasto destro del mouse su uno spazio vuoto della "
                            "finestra.\nPer modificare un veicolo, fai doppio click sulla riga corrispondente e poi "
                            "premi il pulsante Modifica in alto a destra.\n"
@@ -96,7 +98,7 @@ class ListaVeicoli:
             res = self.__db.select("veicoli", "id",
                                    where={"marca": self.__marca, "modello[~]": self.__SEARCH.get() + '%'})
             for veicolo in res:
-                v = Veicolo(self.__db, res.id)
+                v = Veicolo(self.__db, veicolo.id)
                 self.__tree.insert('', 'end', values=vars(v))
 
     def reset(self):
@@ -241,3 +243,12 @@ class ListaVeicoli:
                               message="Il veicolo è stato eliminato correttamente")
             else:
                 return
+
+    def visualizza_veicolo(self):
+        selected = self.__tree.item(self.__tree.focus())
+        if selected["text"] == "":
+            tkmb.showwarning(title="Nessun veicolo selezionato!",
+                             message="Non è stato selezionato nessun veicolo. Si prega di selezionarne uno per "
+                                     "apportare modifiche.")
+            return
+        VisualizzaVeicolo(Veicolo(self.__db, selected['text']))

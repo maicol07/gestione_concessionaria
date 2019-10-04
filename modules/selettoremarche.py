@@ -1,14 +1,15 @@
 # ========== LIBRERIE INTERNE ========== #
 import tkinter.messagebox as tkmb
+from io import BytesIO
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
-from io import BytesIO
+
 import src.Style
 from src.common import import_pil
 
 # ===== IMPORT PIL ===== #
-import_pil('../')
+import_pil('')
 import PIL.Image
 import PIL.ImageTk
 from modules.listaveicoli import ListaVeicoli
@@ -126,7 +127,7 @@ class SelettoreMarche:
         try:
             data=path.decode
             img=PIL.Image.open(BytesIO(path))
-        except:
+        except (UnicodeDecodeError, AttributeError):
             img = PIL.Image.open(path)
         wpercent = (basewidth / float(img.size[0]))
         hsize = int((float(img.size[1]) * float(wpercent)))
