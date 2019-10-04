@@ -24,7 +24,7 @@ class Veicolo:
                 setattr(self, "marca", self.__db.get("marche", "nome", where={"id": getattr(res, key)}))
                 setattr(self, "__marca_id", getattr(res, key))
                 continue
-            setattr(self, key, res.key)
+            setattr(self, key, getattr(res, key))
         self.__id = id
 
     def save(self):
