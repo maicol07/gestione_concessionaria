@@ -21,8 +21,8 @@ class Veicolo:
         res = self.__db.select(self.__table, where={"id": self.__id})
         for key in dir(res):
             if key == "marca":
-                setattr(self, "marca", self.__db.get("marche", "nome", where={"id": res.key}))
-                setattr(self, "__marca_id", res.key)
+                setattr(self, "marca", self.__db.get("marche", "nome", where={"id": getattr(res, key)}))
+                setattr(self, "__marca_id", getattr(res, key))
                 continue
             setattr(self, key, res.key)
         self.__id = id
