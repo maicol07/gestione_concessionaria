@@ -37,7 +37,7 @@ if system != "linux":  # escludo linux in quanto ha già Pillow installato
                                                                                                py_version.micro))
             exit()
         os_info = "macosx-10.14-x86_64"
-    sys.path.insert(0, os.path.abspath("../lib/PIL/Pillow-6.1.0-py{}.{}-{}.egg".format(py_version.major, py_version.minor,
+    sys.path.insert(0, os.path.abspath("lib/PIL/Pillow-6.1.0-py{}.{}-{}.egg".format(py_version.major, py_version.minor,
                                                                                     os_info)))
 
 # Packages

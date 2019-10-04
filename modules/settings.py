@@ -3,7 +3,7 @@ import tkinter.messagebox as tkmb
 from tkinter import *
 from tkinter.ttk import *
 
-sys.path.insert(0, '../lib/tkfontchooser-2.0.2-py3.6.egg')
+sys.path.insert(0, 'lib/tkfontchooser-2.0.2-py3.6.egg')
 from tkfontchooser import askfont
 
 # ========== CLASSI ========== #

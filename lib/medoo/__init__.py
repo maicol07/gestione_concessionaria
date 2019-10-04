@@ -8,7 +8,7 @@ class utils(object):
         """
         Always return a list
         """
-        from six import string_types
+        from lib.six import string_types
         return [y.strip() for y in x.split(',')] if isinstance(x, string_types) else list(x)
 
     @staticmethod
