@@ -84,7 +84,8 @@ class ListaVeicoli:
         self.__tree.column('qta', stretch=NO, minwidth=0, width=80)
         self.__tree.pack()
         self.__tree.bind("<Button-3>", self.actions)
-        self.__id_list = self.__db.select("veicoli", "id", where={"marca": self.__marca}).all()
+        lista_veicoli = self.__db.select("veicoli", "id", where={"marca": self.__marca})
+        self.__id_list = lista_veicoli.all()
         self.__tree.bind("<Double-Button-1>", lambda e: self.visualizza_veicolo())
         for veicolo in self.__id_list:
             v = Veicolo(self.__db, veicolo.id)

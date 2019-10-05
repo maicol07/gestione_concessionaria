@@ -129,7 +129,6 @@ class VisualizzaVeicolo:
         for i in self.__veicolo.get_attributes(only_table_columns=True).keys():
             if i in ["marca", "qta"]:
                 continue
-            print(getattr(self.__veicolo, i))
             setattr(self.__veicolo, i, getattr(self.__veicolo, i).get())
         self.__veicolo.save()
         tkmb.showinfo(parent=self.__edit_window, title="Veicolo modificato correttamente",

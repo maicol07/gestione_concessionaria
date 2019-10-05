@@ -19,17 +19,16 @@ class Veicolo:
 
     def __find(self):
         columns = ['marca', 'serie', 'modello', 'cavalli', 'anno_costruzione', 'categoria', 'prezzo', 'qta', 'foto']
-        print(self.id)
-        res = self.__db.select("veicoli", where={"id": self.id}).first()
-        for key in res.keys():
+        res = self.__db.select("veicoli", where={"id": self.id}).all()
+        for key in res[0].keys():
             if not (key in columns):
                 continue
             if key == "marca":
-                name = self.__db.get("marche", "nome", where={"id": res[key]})
-                setattr(self, "marca", res[key])
+                name = self.__db.get("marche", "nome", where={"id": res[0][key]})
+                setattr(self, "marca", res[0][key])
                 setattr(self, "marca_name", name)
                 continue
-            setattr(self, key, res[key])
+            setattr(self, key, res[0][key])
 
     def save(self):
         attributes = self.get_attributes(only_table_columns=True)

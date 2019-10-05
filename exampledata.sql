@@ -6,9 +6,6 @@ INSERT INTO "marche" ("id", "nome", "logo")
 VALUES ('3', 'Ford', 'img/exampledata/ford_logo.jpeg');
 INSERT INTO "veicoli" ("id", "marca", "serie", "modello", "cavalli", "anno_costruzione", "categoria", "prezzo", "qta",
                        "foto")
-VALUES ('1', '1', '', 'Panda', '34', '1986', 'Autoveicolo', '1500.0', '5', 'img/exampledata/fiat_panda.jpg');
-INSERT INTO "veicoli" ("id", "marca", "serie", "modello", "cavalli", "anno_costruzione", "categoria", "prezzo", "qta",
-                       "foto")
 VALUES ('2', '2', '', 'Y10', '45', '1985', 'Autoveicolo', '2200.0', '4', 'img/exampledata/autobianchi_y10.jpeg');
 INSERT INTO "veicoli" ("id", "marca", "serie", "modello", "cavalli", "anno_costruzione", "categoria", "prezzo", "qta",
                        "foto")
