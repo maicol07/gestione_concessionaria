@@ -251,4 +251,4 @@ class ListaVeicoli:
                              message="Non è stato selezionato nessun veicolo. Si prega di selezionarne uno per "
                                      "apportare modifiche.")
             return
-        VisualizzaVeicolo(Veicolo(self.__db, selected['text']))
+        VisualizzaVeicolo(Veicolo(self.__db, selected['text']), self.__db, self.__style)
