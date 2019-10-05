@@ -304,8 +304,7 @@ class ListaVeicoli:
             return
 
         scelta = tkmb.askyesno(parent=self.__root, title="Conferma eliminazione",
-                               message="Si è sicuri di voler eliminare i seguenti veicoli?\n\n{}").format(
-            self.__tree["values"].join(" - ") for i in vehicles)
+                               message="Si è sicuri di voler eliminare i veicoli selezionati?")
         for i in vehicles:
             vehicle = self.__tree.item(self.__tree.focus())
             if scelta is True:
@@ -313,6 +312,8 @@ class ListaVeicoli:
                 del v
                 tkmb.showinfo(parent=self.__root, title="Veicolo eliminato correttamente!",
                               message="Il veicolo è stato eliminato correttamente")
+                self.__root.destroy()
+                ListaVeicoli(self.__marca, self.__db)
             else:
                 return
 
