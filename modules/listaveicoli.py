@@ -8,6 +8,11 @@ import src.Style
 from lib.medoo.database.sqlite import Sqlite
 from modules.visualizza_veicolo import VisualizzaVeicolo
 from src.Veicolo import Veicolo
+from src.common import import_pil
+
+import_pil()
+import PIL.Image
+import PIL.ImageTk
 
 
 class ListaVeicoli:
@@ -22,25 +27,29 @@ class ListaVeicoli:
         :return:
         """
         w = Toplevel()
-        w.title("Lista veicoli")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
         self.__root = w
         self.__style = src.Style.s
         self.__db = db
         self.__marca = marca
+        self.__marca_name = self.__db.get("marche", "nome", where={"id": self.__marca})
+        w.title("Lista veicoli {}".format(self.__marca_name))
         self.__style.change_window_bg(w)
 
+        fw = Frame(w)
+        fw.pack()
         # ===== FILTRO ===== #
-        f = Labelframe(w, text="Filtra")
-        f.pack(pady=10)
+        f = Labelframe(fw, text="Filtra")
+        f.grid(row=0, column=0, pady=10)
         self.__SEARCH = StringVar()
+        self.__SEARCH.trace('w', lambda i, o, v: self.search())
         search = Entry(f, textvariable=self.__SEARCH)
         search.grid(row=0, column=0, padx=10, pady=5)
         filter_icon = PhotoImage(file="img/search.png")
-        btn_filter = Button(f, text="Filtra", compound=LEFT, image=filter_icon)
+        btn_filter = Button(f, text="Filtra", compound=LEFT, image=filter_icon, command=self.search)
         btn_filter.grid(row=0, column=1, padx=10, pady=5)
         reset_icon = PhotoImage(file="img/restore.png")
-        btn_reset = Button(f, text="Reset", compound=LEFT, image=reset_icon)
+        btn_reset = Button(f, text="Reset", compound=LEFT, image=reset_icon, command=self.reset)
         btn_reset.grid(row=0, column=2, padx=10, pady=5)
 
         # ===== TREEVIEW ===== #
@@ -75,11 +84,12 @@ class ListaVeicoli:
         self.__tree.column('qta', stretch=NO, minwidth=0, width=80)
         self.__tree.pack()
         self.__tree.bind("<Button-3>", self.actions)
-        res = self.__db.select("veicoli", "id", where={"marca": self.__marca})
+        self.__id_list = self.__db.select("veicoli", "id", where={"marca": self.__marca}).all()
         self.__tree.bind("<Double-Button-1>", lambda e: self.visualizza_veicolo())
-        for veicolo in res:
+        for veicolo in self.__id_list:
             v = Veicolo(self.__db, veicolo.id)
             valori = v.get_attributes(only_table_columns=True)
+            valori['marca'] = self.__marca_name
             self.__tree.insert('', 'end', text=v.id, values=list(valori.values()))
         li = Label(w, text="Per aggiungere un veicolo, usa il tasto destro del mouse su uno spazio vuoto della "
                            "finestra.\nPer modificare un veicolo, fai doppio click sulla riga corrispondente e poi "
@@ -87,6 +97,11 @@ class ListaVeicoli:
                            "Per eliminare un veicolo, selezionare una riga e poi premere il tasto destro del mouse.")
         li.pack(pady=10)
         w.bind("<Button-3>", self.actions_add)
+
+        # ===== MODIFICA MARCA ===== #
+        iedit = PhotoImage(file="img/edit.png")
+        btn_edit = Button(fw, text="Modifica marca", image=iedit, compound=LEFT, command=self.modifica_marca)
+        btn_edit.grid(row=0, column=1, padx=20)
         w.mainloop()
 
     def search(self):
@@ -97,11 +112,13 @@ class ListaVeicoli:
         """
         if self.__SEARCH.get() != "":
             self.__tree.delete(*self.__tree.get_children())
-            res = self.__db.select("veicoli", "id",
-                                   where={"marca": self.__marca, "modello[~]": self.__SEARCH.get() + '%'})
-            for veicolo in res:
+            for veicolo in self.__id_list:
                 v = Veicolo(self.__db, veicolo.id)
-                self.__tree.insert('', 'end', values=vars(v))
+                if self.__SEARCH.get() not in v.modello:
+                    continue
+                valori = v.get_attributes(only_table_columns=True)
+                valori['marca'] = self.__marca_name
+                self.__tree.insert('', 'end', text=v.id, values=list(valori.values()))
 
     def reset(self):
         """
@@ -110,10 +127,11 @@ class ListaVeicoli:
         :return:
         """
         self.__tree.delete(*self.__tree.get_children())
-        res = self.__db.select("veicoli", "id", where={"marca": self.__marca})
-        for veicolo in res:
-            v = Veicolo(self.__db, res.id)
-            self.__tree.insert('', 'end', text=v.id, values=vars(v).values())
+        for veicolo in self.__id_list:
+            v = Veicolo(self.__db, veicolo.id)
+            valori = v.get_attributes(only_table_columns=True)
+            valori['marca'] = self.__marca_name
+            self.__tree.insert('', 'end', text=v.id, values=list(valori.values()))
 
     def actions(self, event):
         """
@@ -187,12 +205,10 @@ class ListaVeicoli:
             if i == "categoria":
                 cas = Combobox(f, textvariable=getattr(self.__veicolo, i), values=sorted(["Autoveicolo", "Motociclo",
                                                                                           "Ciclomotore", "Rimorchio",
-                                                                                          "Semirimorchio"]) + ['Altro'],
-                               postcommand=lambda: self.__button_state(t, btn_salva))
+                                                                                          "Semirimorchio"]) + ['Altro'])
             else:
                 cas = Entry(f, textvariable=getattr(self.__veicolo, i))
-                cas.bind('<Key>', lambda e: self.__button_state(t, btn_salva))
-            # setattr(self, "add_{}".format(i), cas)
+            getattr(self.__veicolo, i).trace('w', lambda i, v, o: self.__button_state(t, btn_salva))
             cas.grid(row=r, column=1, padx=10, pady=10)
             r += 1
         f2 = Frame(w)
@@ -200,6 +216,7 @@ class ListaVeicoli:
         simm = Label(f2, text="Immagine")
         simm.grid(row=0, column=0, padx=10, pady=10)
         immagine = PhotoImage(file="img/pick_file.png")
+        self.__image = ''
         btn = Button(f2, text="Seleziona immagine", image=immagine, compound=LEFT,
                      command=lambda: self.selImmagine(btn, w))
         btn.grid(row=0, column=0, padx=10, pady=10)
@@ -209,19 +226,14 @@ class ListaVeicoli:
 
     def selImmagine(self, bi, window):
         """
-            Apre il file picker per selezionare una immagine
+        Apre il file picker per selezionare una immagine
 
-            Parametri
-            ----------
-            :param Button bi : (Tkinter Button)
-                Pulsante Immagine Tkinter
-            :param window : (string)
-                Stringa che riporta il nome della finestra.
-
-            Ritorna
-            -------
-            Niente
-            """
+        :param Button bi : (Tkinter Button)
+            Pulsante Immagine Tkinter
+        :param window : (string)
+            Stringa che riporta il nome della finestra.
+        :return:
+        """
         fImage = askopenfilename(
             filetypes=[
                 ("File Immagini", "*.jpg *.jpeg *.png *.bmp *.gif *.psd *.tif *.tiff *.xbm *.xpm *.pgm *.ppm")])
@@ -265,13 +277,17 @@ class ListaVeicoli:
             btn.configure(state=ACTIVE)
 
     def salva(self):
-        for i in vars(self.__veicolo).keys():
-            if i == "_Veicolo__db":
+        for i in self.__veicolo.get_attributes(only_table_columns=True).keys():
+            if i in ["marca"]:
                 continue
             setattr(self.__veicolo, i, getattr(self.__veicolo, i).get())
+        setattr(self.__veicolo, 'foto', self.__image)
         self.__veicolo.save()
         tkmb.showinfo(parent=self.__add_window, title="Veicolo aggiunto correttamente",
                       message="Il veicolo è stato aggiunto correttamente!")
+        self.__add_window.destroy()
+        self.__root.destroy()
+        ListaVeicoli(self.__marca, self.__db)
 
     def delete(self):
         """
@@ -308,3 +324,48 @@ class ListaVeicoli:
                                      "apportare modifiche.")
             return
         VisualizzaVeicolo(Veicolo(self.__db, selected['text']), self.__db, self.__style)
+
+    def modifica_marca(self):
+        w = Toplevel()
+        w.title("Modifica marca {}".format(self.__marca_name))
+        w.iconphoto(True, PhotoImage(file="img/icon.png"))
+        self.__style.change_window_bg(w)
+
+        f = Frame(w)
+        f.pack()
+        e = Label(f, text="Marca")
+        e.grid(row=0, column=0, padx=10, pady=10)
+        s = StringVar(value=self.__marca_name)
+        ctext = Entry(f, textvariable=s)
+        ctext.grid(row=0, column=1, padx=10, pady=10)
+        f2 = Frame(w)
+        f2.pack()
+        simm = Label(f2, text="Immagine")
+        simm.grid(row=0, column=0, padx=10, pady=10)
+        imm = self.__db.get("marche", "logo", where={"id": self.__marca})
+        if imm:
+            immagine = self.scale_image(imm, 100)
+            compound = TOP
+            text = ''
+        else:
+            immagine = PhotoImage(file="img/pick_file.png")
+            compound = LEFT
+            text = 'Seleziona immagine'
+        btn = Button(f2, text=text, image=immagine, compound=compound,
+                     command=lambda: self.selImmagine(btn, w))
+        immagine2 = PhotoImage(file="img/save.png")
+        btns = Button(w, text="Salva", image=immagine2, compound=LEFT,
+                      command=lambda: self.salva_marca(ctext.get(), self.__image, w))
+        btn.grid(row=0, column=1, padx=10, pady=10)
+        btns.pack()
+        simm.grid(row=0, column=0, padx=10, pady=10)
+        w.mainloop()
+
+    def salva_marca(self, nome, immagine, wadd):
+        if nome == "":
+            tkmb.showerror(parent=wadd, title="Errore",
+                           message="Non è stato inserito il nome della marca!")
+        self.__db.update("marche", {"nome": nome, "logo": immagine}, where={"id": self.__marca})
+        tkmb.showinfo(title="Marca aggiunta con successo!",
+                      message="La marca è stata aggiunta con successo!")
+        wadd.destroy()  # elimina la scermata "Aggiungi"

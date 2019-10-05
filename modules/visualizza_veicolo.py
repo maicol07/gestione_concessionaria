@@ -37,7 +37,7 @@ class VisualizzaVeicolo:
         etc2 = Label(fr, text="Questo veicolo, della marca {}, possiede {} cavalli. Il nome del modello è {} ed è "
                               "stata costruita nel {}.\nLa categoria a cui questo veicolo appartiene è {}. Il prezzo "
                               "della vettura è {} mentre in concessionaria sono disponibili {} "
-                              "esemplare/i ".format(veicolo.marca,
+                              "esemplare/i ".format(veicolo.marca_name,
                                                     veicolo.cavalli,
                                                     veicolo.modello,
                                                     veicolo.anno_costruzione,
@@ -47,7 +47,9 @@ class VisualizzaVeicolo:
         etc1.grid(row=1, column=1)
         etc2.grid(row=1, column=3)
 
-        puls = Button(fr, text="Modifica veicolo", command=self.modificaVeicolo).grid(row=6, column=8)
+        iedit = PhotoImage(file="img/edit.png")
+        puls = Button(fr, text="Modifica veicolo", image=iedit, compound=LEFT, command=self.modificaVeicolo).grid(
+            row=6, column=8)
         quant = Label(fr, text="{}".format(self.__veicolo.qta))
         self.__quant = quant
         piu = Button(fr, text="+", command=self.aumenta)

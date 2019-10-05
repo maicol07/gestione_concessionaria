@@ -19,6 +19,7 @@ class Veicolo:
 
     def __find(self):
         columns = ['marca', 'serie', 'modello', 'cavalli', 'anno_costruzione', 'categoria', 'prezzo', 'qta', 'foto']
+        print(self.id)
         res = self.__db.select("veicoli", where={"id": self.id}).first()
         for key in res.keys():
             if not (key in columns):

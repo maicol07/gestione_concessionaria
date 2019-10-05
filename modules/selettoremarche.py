@@ -24,7 +24,8 @@ class SelettoreMarche:
         self.__root = w
         w.title("Seleziona marca")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
-        src.Style.s.change_window_bg(w)
+        self.__style = src.Style.s
+        self.__style.change_window_bg(w)
         f = Frame(w)
         f.pack()
         self.__image=""
@@ -39,6 +40,8 @@ class SelettoreMarche:
             btn = Button(f, text=marca.nome, image=var, compound=TOP,
                          command=lambda id=marca.id: ListaVeicoli(id, self.__db))
             btn.grid(row=contr, column=contc)
+            btn['image'] = var
+            btn.image = var
             contc += 1
             if contc == 4:
                 contr += 1
@@ -57,14 +60,15 @@ class SelettoreMarche:
         w = Toplevel()
         w.title("Aggiungi marca")
         w.iconphoto(True, PhotoImage(file="img/icon.png"))
+        self.__style.change_window_bg(w)
 
         f = Frame(w)
         f.pack()
         e = Label(f, text="Marca")
-        e.grid(row=0, column=0)
+        e.grid(row=0, column=0, padx=10, pady=10)
         s = StringVar()
         ctext = Entry(f, textvariable=s)
-        ctext.grid(row=0, column=1)
+        ctext.grid(row=0, column=1, padx=10, pady=10)
         f2 = Frame(w)
         f2.pack()
         simm = Label(f2, text="Immagine")
@@ -74,9 +78,9 @@ class SelettoreMarche:
         immagine2 = PhotoImage(file="img/save.png")
         btns = Button(w, text="Salva", image=immagine2, compound=LEFT,
                       command=lambda: self.Salva(ctext.get(), self.__image, w))
-        btn.grid(row=0, column=1)
+        btn.grid(row=0, column=1, padx=10, pady=10)
         btns.pack()
-        simm.grid(row=0, column=0)
+        simm.grid(row=0, column=0, padx=10, pady=10)
         w.mainloop()
 
     def selImmagine(self, bi, window):
@@ -158,6 +162,7 @@ class SelettoreMarche:
         n=values.index(nome)
         keys=list(marche.keys())
         self.__db.delete("marche", where={"id":keys[n]})
+        self.__db.delete("veicoli", where={"marca": keys[n]})  # Elimina anche i veicoli di quella marca
         tkmb.showinfo(parent=w, title="Info", message="La marca è stata elliminata con successo")
         w.destroy()
         self.__root.destroy()

@@ -92,10 +92,10 @@ class Impostazioni:
                                    message="Attenzione! Sono già presenti dei dati inseriti. Si vuole veramente "
                                            "sostituirli con i dati di esempio? TUTTI I DATI GIÀ PRESENTI VERRANNO "
                                            "ELIMINATI!")
-            self.__db.delete("marche", where=None)
-            self.__db.delete("veicoli", where=None)
             if not result:
                 return
+        self.__db.delete("marche", where=None)
+        self.__db.delete("veicoli", where=None)
         data = open("exampledata.sql")
         self.__db.cursor.executescript(data.read())
         data.close()
