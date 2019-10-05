@@ -36,21 +36,10 @@ class ListaVeicoli:
         w.title("Lista veicoli {}".format(self.__marca_name))
         self.__style.change_window_bg(w)
 
-        fw = Frame(w)
-        fw.pack()
-        # ===== FILTRO ===== #
-        f = Labelframe(fw, text="Filtra")
-        f.grid(row=0, column=0, pady=10)
-        self.__SEARCH = StringVar()
-        self.__SEARCH.trace('w', lambda i, o, v: self.search())
-        search = Entry(f, textvariable=self.__SEARCH)
-        search.grid(row=0, column=0, padx=10, pady=5)
-        filter_icon = PhotoImage(file="img/search.png")
-        btn_filter = Button(f, text="Filtra", compound=LEFT, image=filter_icon, command=self.search)
-        btn_filter.grid(row=0, column=1, padx=10, pady=5)
-        reset_icon = PhotoImage(file="img/restore.png")
-        btn_reset = Button(f, text="Reset", compound=LEFT, image=reset_icon, command=self.reset)
-        btn_reset.grid(row=0, column=2, padx=10, pady=5)
+        # ===== MODIFICA MARCA ===== #
+        iedit = PhotoImage(file="img/edit.png")
+        btn_edit = Button(w, text="Modifica marca", image=iedit, compound=LEFT, command=self.modifica_marca)
+        btn_edit.pack(pady=10)
 
         # ===== TREEVIEW ===== #
         ft = Frame(w, height=500)
@@ -98,41 +87,7 @@ class ListaVeicoli:
                            "Per eliminare un veicolo, selezionare una riga e poi premere il tasto destro del mouse.")
         li.pack(pady=10)
         w.bind("<Button-3>", self.actions_add)
-
-        # ===== MODIFICA MARCA ===== #
-        iedit = PhotoImage(file="img/edit.png")
-        btn_edit = Button(fw, text="Modifica marca", image=iedit, compound=LEFT, command=self.modifica_marca)
-        btn_edit.grid(row=0, column=1, padx=20)
         w.mainloop()
-
-    def search(self):
-        """
-        Gestisce il filtraggio dei veicoli di una determinata marca in base a quello scritto dall'utente
-
-        :return:
-        """
-        if self.__SEARCH.get() != "":
-            self.__tree.delete(*self.__tree.get_children())
-            for veicolo in self.__id_list:
-                v = Veicolo(self.__db, veicolo.id)
-                if self.__SEARCH.get() not in v.modello:
-                    continue
-                valori = v.get_attributes(only_table_columns=True)
-                valori['marca'] = self.__marca_name
-                self.__tree.insert('', 'end', text=v.id, values=list(valori.values()))
-
-    def reset(self):
-        """
-        Resetta le opzioni di filtraggio della tabella. Vengono visualizzati tutti i veicoli di una determinata marca
-
-        :return:
-        """
-        self.__tree.delete(*self.__tree.get_children())
-        for veicolo in self.__id_list:
-            v = Veicolo(self.__db, veicolo.id)
-            valori = v.get_attributes(only_table_columns=True)
-            valori['marca'] = self.__marca_name
-            self.__tree.insert('', 'end', text=v.id, values=list(valori.values()))
 
     def actions(self, event):
         """
@@ -225,7 +180,7 @@ class ListaVeicoli:
         w.mainloop()
         del self.__add_window
 
-    def selImmagine(self, bi, window):
+    def selImmagine(self, bi, window, var=None):
         """
         Apre il file picker per selezionare una immagine
 
@@ -239,7 +194,10 @@ class ListaVeicoli:
             filetypes=[
                 ("File Immagini", "*.jpg *.jpeg *.png *.bmp *.gif *.psd *.tif *.tiff *.xbm *.xpm *.pgm *.ppm")])
         if not (fImage == ""):
-            self.__image = fImage
+            if var:
+                var = fImage
+            else:
+                self.__image = fImage
             bi["text"] = ""
         else:
             bi["text"] = "Seleziona immagine"
@@ -345,8 +303,10 @@ class ListaVeicoli:
         simm = Label(f2, text="Immagine")
         simm.grid(row=0, column=0, padx=10, pady=10)
         imm = self.__db.get("marche", "logo", where={"id": self.__marca})
+        self.__marca_image = ""
         if imm:
             immagine = self.scale_image(imm, 100)
+            self.__marca_image = imm
             compound = TOP
             text = ''
         else:
@@ -354,10 +314,10 @@ class ListaVeicoli:
             compound = LEFT
             text = 'Seleziona immagine'
         btn = Button(f2, text=text, image=immagine, compound=compound,
-                     command=lambda: self.selImmagine(btn, w))
+                     command=lambda: self.selImmagine(btn, w, var=self.__marca_image))
         immagine2 = PhotoImage(file="img/save.png")
         btns = Button(w, text="Salva", image=immagine2, compound=LEFT,
-                      command=lambda: self.salva_marca(ctext.get(), self.__image, w))
+                      command=lambda: self.salva_marca(ctext.get(), self.__marca_image, w))
         btn.grid(row=0, column=1, padx=10, pady=10)
         btns.pack()
         simm.grid(row=0, column=0, padx=10, pady=10)

@@ -36,7 +36,7 @@ class VisualizzaVeicolo:
         etc1 = Label(fr, image=imm)
         etc2 = Label(fr, text="Questo veicolo, della marca {}, possiede {} cavalli. Il nome del modello è {} ed è "
                               "stata costruita nel {}.\nLa categoria a cui questo veicolo appartiene è {}. Il prezzo "
-                              "della vettura è {} mentre in concessionaria sono disponibili {} "
+                              "del mezzo è {} mila € mentre in concessionaria sono disponibili {} "
                               "esemplare/i ".format(veicolo.marca_name,
                                                     veicolo.cavalli,
                                                     veicolo.modello,
