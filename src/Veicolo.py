@@ -19,36 +19,35 @@ class Veicolo:
 
     def __find(self):
         columns = ['marca', 'serie', 'modello', 'cavalli', 'anno_costruzione', 'categoria', 'prezzo', 'qta', 'foto']
-        self.__db.cursor.execute('SELECT "marca","serie","modello","cavalli","anno_costruzione","categoria","prezzo",'
-                                 '"qta", "foto" FROM "veicoli" WHERE "id" = 4')
-        res = self.__db.cursor.fetchall()[0]
-        for pos, key in enumerate(columns):
+        res = self.__db.select("veicoli", where={"id": self.id}).first()
+        for key in res.keys():
             if not (key in columns):
                 continue
             if key == "marca":
-                setattr(self, "marca", self.__db.get("marche", "nome", where={"id": res[pos]}))
-                setattr(self, "marca_id", res[pos])
+                name = self.__db.get("marche", "nome", where={"id": res[key]})
+                setattr(self, "marca", res[key])
+                setattr(self, "marca_name", name)
                 continue
-            setattr(self, key, res[pos])
+            setattr(self, key, res[key])
 
     def save(self):
-        attributes = self.get_attributes()
-        if hasattr(self, "__id"):
+        attributes = self.get_attributes(only_table_columns=True)
+        if hasattr(self, "id"):
             self.__db.update(self.__table, attributes, where={"id": self.id})
         else:
             self.__db.insert(self.__table, attributes)
 
-    def get_attributes(self):
+    def get_attributes(self, only_table_columns=False):
         attributes = vars(self).copy()
         for i in list(attributes.keys()):
             if "_Veicolo" in i:
                 del attributes[i]
+        if only_table_columns:
+            columns = ['marca', 'serie', 'modello', 'cavalli', 'anno_costruzione', 'categoria', 'prezzo', 'qta']
+            for i in list(attributes.keys()):
+                if i not in columns:
+                    del attributes[i]
         return attributes
-        '''columns = ['marca', 'serie', 'modello', 'cavalli', 'anno_costruzione', 'categoria', 'prezzo', 'qta']
-        d = {}
-        for i in columns:
-            d[i] = getattr(self, i)
-        return d'''
 
     def __del__(self):
         if hasattr(self, "id"):

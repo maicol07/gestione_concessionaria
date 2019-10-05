@@ -1,6 +1,5 @@
 # ========== LIBRERIE INTERNE ========== #
 import tkinter.messagebox as tkmb
-from io import BytesIO
 from tkinter import *
 from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
@@ -32,13 +31,18 @@ class SelettoreMarche:
         marche = db.select("marche")  # seleziona tutto dalla tabella marche, ritorna un oggetto
         contr = 0  # contatore righe
         contc = 0  # contatore colonne
-        for marca in marche:
-            var = self.scale_image(marca.logo, 50)  # ottengo l'oggetto " logo" (il percorso del logo)
-            btn = Button(f, text=marca.nome, image=var, compound=TOP, command=lambda: ListaVeicoli(marca.id, self.__db))
+        for marca in marche.all():
+            if marca.logo:
+                var = self.scale_image(marca.logo, 50)  # ottengo l'oggetto " logo" (il percorso del logo)
+            else:
+                var = None
+            btn = Button(f, text=marca.nome, image=var, compound=TOP,
+                         command=lambda id=marca.id: ListaVeicoli(id, self.__db))
             btn.grid(row=contr, column=contc)
             contc += 1
-            if contc == 2:
+            if contc == 4:
                 contr += 1
+                contc = 0
         vari = PhotoImage(file="img/add.png")
         f1 = Frame(w)
         f1.pack()
@@ -124,11 +128,7 @@ class SelettoreMarche:
         :param basewidth int
         :return:
         """
-        try:
-            data=path.decode
-            img=PIL.Image.open(BytesIO(path))
-        except (UnicodeDecodeError, AttributeError):
-            img = PIL.Image.open(path)
+        img = PIL.Image.open(path)
         wpercent = (basewidth / float(img.size[0]))
         hsize = int((float(img.size[1]) * float(wpercent)))
         img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)

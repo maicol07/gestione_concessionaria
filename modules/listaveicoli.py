@@ -1,5 +1,6 @@
 import tkinter.messagebox as tkmb
 from tkinter import *
+from tkinter.filedialog import askopenfilename
 from tkinter.ttk import *
 
 import lib.wckToolTips
@@ -61,7 +62,7 @@ class ListaVeicoli:
         self.__tree.heading('cv', text="Cavalli", anchor=W)
         self.__tree.heading('anno_costruzione', text="Anno di costr.", anchor=W)
         self.__tree.heading('categoria', text="Categoria", anchor=W)
-        self.__tree.heading('prezzo', text="Prezzo", anchor=W)
+        self.__tree.heading('prezzo', text="Prezzo (mila €)", anchor=W)
         self.__tree.heading('qta', text="Quantità disp.", anchor=W)
         self.__tree.column('#0', stretch=NO, minwidth=0, width=0)
         self.__tree.column('marca', stretch=NO, minwidth=0, width=80)
@@ -78,7 +79,8 @@ class ListaVeicoli:
         self.__tree.bind("<Double-Button-1>", lambda e: self.visualizza_veicolo())
         for veicolo in res:
             v = Veicolo(self.__db, veicolo.id)
-            self.__tree.insert('', 'end', text=v.id, values=list(v.get_attributes().values()))
+            valori = v.get_attributes(only_table_columns=True)
+            self.__tree.insert('', 'end', text=v.id, values=list(valori.values()))
         li = Label(w, text="Per aggiungere un veicolo, usa il tasto destro del mouse su uno spazio vuoto della "
                            "finestra.\nPer modificare un veicolo, fai doppio click sulla riga corrispondente e poi "
                            "premi il pulsante Modifica in alto a destra.\n"
@@ -168,6 +170,7 @@ class ListaVeicoli:
         self.__style.change_window_bg(w)
         self.__add_window = w
         self.__veicolo = Veicolo(self.__db)
+        setattr(self.__veicolo, "marca", self.__marca)
         # Creo l'etichetta e il pulsante SALVA finale prima
         save = PhotoImage(file="img/save.png")
         btn_salva = Button(w, text="Salva", image=save, compound=LEFT, state=DISABLED, command=self.salva)
@@ -192,9 +195,62 @@ class ListaVeicoli:
             # setattr(self, "add_{}".format(i), cas)
             cas.grid(row=r, column=1, padx=10, pady=10)
             r += 1
+        f2 = Frame(w)
+        f2.pack()
+        simm = Label(f2, text="Immagine")
+        simm.grid(row=0, column=0, padx=10, pady=10)
+        immagine = PhotoImage(file="img/pick_file.png")
+        btn = Button(f2, text="Seleziona immagine", image=immagine, compound=LEFT,
+                     command=lambda: self.selImmagine(btn, w))
+        btn.grid(row=0, column=0, padx=10, pady=10)
         btn_salva.pack(pady=10)
         w.mainloop()
         del self.__add_window
+
+    def selImmagine(self, bi, window):
+        """
+            Apre il file picker per selezionare una immagine
+
+            Parametri
+            ----------
+            :param Button bi : (Tkinter Button)
+                Pulsante Immagine Tkinter
+            :param window : (string)
+                Stringa che riporta il nome della finestra.
+
+            Ritorna
+            -------
+            Niente
+            """
+        fImage = askopenfilename(
+            filetypes=[
+                ("File Immagini", "*.jpg *.jpeg *.png *.bmp *.gif *.psd *.tif *.tiff *.xbm *.xpm *.pgm *.ppm")])
+        if not (fImage == ""):
+            self.__image = fImage
+            bi["text"] = ""
+        else:
+            bi["text"] = "Seleziona immagine"
+            return
+        img = self.scale_image(fImage, 100)
+        bi["image"] = img
+        bi.image = img
+        window.focus()
+
+    def scale_image(self, path, basewidth):
+        """
+        Ridimensiona l'immagine passata come parametro ad una larghezza definita (secondo parametro) ed altezza
+        variabile, scalata in base a quella vecchia e alla larghezza desiderata
+
+        :param path str
+        :param basewidth int
+        :return:
+        """
+        img = PIL.Image.open(path)
+        wpercent = (basewidth / float(img.size[0]))
+        hsize = int((float(img.size[1]) * float(wpercent)))
+        img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+        photo = PIL.ImageTk.PhotoImage(img)
+        return photo
 
     def __button_state(self, t, btn):
         if not (self.__veicolo.modello.get() and self.__veicolo.categoria.get()):
@@ -205,7 +261,7 @@ class ListaVeicoli:
             try:
                 lib.wckToolTips.unregister(btn)
             except ValueError:
-                pass
+                return
             btn.configure(state=ACTIVE)
 
     def salva(self):
